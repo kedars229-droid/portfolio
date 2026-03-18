@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RAG Recipe Assistant — Shraddha Kedar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink: #0f0e0c;
+    --cream: #f5f2eb;
+    --warm: #e8e2d5;
+    --accent: #c8401a;
+    --accent2: #2a5298;
+    --muted: #6b6560;
+    --card: #fffef9;
+    --border: #d4cfc6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 4rem;
+    border-bottom: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .hero-body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    padding: 4rem 4rem 2rem;
+    position: relative;
+  }
+
+  .hero-content { flex: 1 1 0; min-width: 0; }
+
+  .hero-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .hero-label::before {
+    content: '';
+    width: 40px; height: 1px;
+    background: var(--accent);
+  }
+
+  .hero-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(3rem, 6.5vw, 6.5rem);
+    font-weight: 900;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+    margin-bottom: 2rem;
+  }
+  .hero-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--muted);
+    max-width: 520px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+  .stat { display: flex; flex-direction: column; gap: 0.3rem; }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* RAG graphic */
+  .hero-graphic {
+    flex: 0 0 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-svg { width: 100%; height: auto; max-height: 480px; }
+
+  .hero-bottom {
+    padding: 1.5rem 4rem;
+    border-top: 1px solid var(--border);
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .scroll-hint {
+    display: flex; align-items: center; gap: 0.6rem;
+    animation: nudge 2s ease-in-out infinite;
+  }
+  @keyframes nudge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(4px)} }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 3.5rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::before { content:''; width:30px; height:1px; background:var(--accent); }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+  .section-intro {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 680px;
+    margin-bottom: 3rem;
+    line-height: 1.8;
+  }
+
+  hr.divider { border:none; border-top:1px solid var(--border); margin: 0 4rem; }
+
+  /* ── FADE IN ── */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* ── DOC CARDS (4 subtopics) ── */
+  .doc-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.2rem;
+    margin-bottom: 1rem;
+  }
+  .doc-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 1.8rem 1.5rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .doc-card:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,0.07); }
+  .doc-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 3px;
+    background: var(--accent);
+  }
+  .doc-num {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(200,64,26,0.1);
+    line-height: 1;
+    margin-bottom: 0.6rem;
+  }
+  .doc-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .doc-desc {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ── CONFIG GRID ── */
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.2rem;
+  }
+  .config-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2rem;
+    display: flex;
+    gap: 1.4rem;
+    align-items: flex-start;
+  }
+  .config-icon {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.3rem;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 0.15rem;
+  }
+  .config-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .config-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .config-text { font-size: 0.88rem; color: var(--muted); line-height: 1.65; }
+
+  /* ── QUESTION TYPE CARDS ── */
+  .qtype-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+  .qtype-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2rem;
+    transition: transform 0.2s ease;
+  }
+  .qtype-card:hover { transform: translateY(-2px); }
+  .qtype-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.8rem;
+  }
+  .qtype-score {
+    font-family: 'Fraunces', serif;
+    font-size: 3.2rem;
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 0.2rem;
+  }
+  .qtype-score span { font-size: 1.2rem; color: var(--muted); font-weight: 300; }
+  .qtype-bar-track {
+    width: 100%;
+    height: 3px;
+    background: var(--warm);
+    border-radius: 2px;
+    margin: 0.8rem 0 1rem;
+    overflow: hidden;
+  }
+  .qtype-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 1.4s cubic-bezier(0.4,0,0.2,1);
+  }
+  .qtype-text { font-size: 0.87rem; color: var(--muted); line-height: 1.65; }
+
+  /* ── RESULTS EXAMPLE CARDS ── */
+  .example-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .example-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .example-header {
+    background: var(--warm);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .example-type {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .example-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.7rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    background: var(--card);
+  }
+  .example-body { padding: 1.5rem; }
+  .example-q {
+    font-family: 'Fraunces', serif;
+    font-size: 0.98rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    font-style: italic;
+  }
+  .example-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .example-col-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .example-col-text { font-size: 0.82rem; color: var(--ink); line-height: 1.6; }
+  .example-note {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.8rem;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.6;
+  }
+
+  /* ── FINDINGS ── */
+  .findings-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  .finding-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2rem;
+    transition: transform 0.2s;
+  }
+  .finding-card:hover { transform: translateY(-2px); }
+  .finding-num {
+    font-family: 'Fraunces', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: rgba(200,64,26,0.12);
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+  .finding-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+  .finding-text { font-size: 0.87rem; color: var(--muted); line-height: 1.7; }
+
+  /* ── DARK RESULTS SECTION ── */
+  .dark-section {
+    background: var(--ink);
+    padding: 4rem 0;
+  }
+  .dark-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+  .dark-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #c8a090;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .dark-label::before { content:''; width:30px; height:1px; background:#c8a090; }
+  .dark-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 700;
+    line-height: 1.1;
+    color: var(--cream);
+    margin-bottom: 0.8rem;
+  }
+  .dark-intro { font-size: 1rem; color: #8a8078; max-width: 680px; margin-bottom: 2.5rem; line-height: 1.8; }
+
+  .pipeline-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    overflow: hidden;
+  }
+  .pipeline-step {
+    padding: 2rem;
+    border: 1px solid #4a4540;
+    border-radius: 3px;
+    position: relative;
+    background: #2c2a24;
+  }
+  .pipeline-step:last-child { border-right: 1px solid #4a4540; }
+  .pipeline-step::after {
+    content: '→';
+    position: absolute;
+    right: -1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--accent);
+    font-size: 1.1rem;
+    z-index: 1;
+  }
+  .pipeline-step:last-child::after { display: none; }
+  .pipeline-num {
+    font-family: 'Fraunces', serif;
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: rgba(200,64,26,0.5);
+    line-height: 1;
+    margin-bottom: 0.6rem;
+  }
+  .pipeline-name {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #e0b8a8;
+    margin-bottom: 0.4rem;
+  }
+  .pipeline-desc { font-size: 0.83rem; color: #6a6460; line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  .footer-strip {
+    background: var(--ink);
+    color: #6a6460;
+    text-align: center;
+    padding: 2.5rem 4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    line-height: 2;
+    text-transform: uppercase;
+    border-top: 1px solid #2a2820;
+  }
+  .footer-strip strong { color: var(--cream); }
+
+  /* ── RAG PIPELINE SVG graphic ── */
+  @keyframes dash-move { to { stroke-dashoffset: -20; } }
+  .animated-dash { animation: dash-move 2s linear infinite; }
+
+  @keyframes pulse-glow {
+    0%, 100% { opacity: 0.6; r: 12; }
+    50%       { opacity: 1;   r: 15; }
+  }
+
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<div class="hero">
+  <div class="hero-top-bar">
+    <span>Shraddha Kedar — Portfolio</span>
+    <span>IS41720 · Language Methods & Models</span>
+    <span>MSc HCI · University College Dublin</span>
+  </div>
+
+  <div class="hero-body">
+    <div class="hero-content">
+      <div class="hero-label">Case Study 02</div>
+      <h1 class="hero-title">
+        RAG<br/>
+        Recipe <em>for</em><br/>
+        Students
+      </h1>
+      <p class="hero-subtitle">
+        A Retrieval-Augmented Generation system built to answer student meal queries — fast, grounded, and budget-aware. Evaluated across factual, synthesis, and edge-case questions.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-num">8</span>
+          <span class="stat-label">Documents</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">24</span>
+          <span class="stat-label">Test Questions</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">4</span>
+          <span class="stat-label">Sub-topics</span>
+        </div>
+        <div class="stat">
+          <span class="stat-num">4.1</span>
+          <span class="stat-label">Avg Rating / 5</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RAG pipeline graphic -->
+    <div class="hero-graphic">
+      <svg viewBox="0 0 440 480" xmlns="http://www.w3.org/2000/svg" class="hero-svg">
+        <!-- background rings -->
+        <circle cx="220" cy="240" r="200" fill="none" stroke="rgba(200,64,26,0.04)" stroke-width="1"/>
+        <circle cx="220" cy="240" r="155" fill="none" stroke="rgba(200,64,26,0.07)" stroke-width="1"/>
+        <circle cx="220" cy="240" r="110" fill="none" stroke="rgba(200,64,26,0.10)" stroke-width="1"/>
+
+        <!-- Flow: User → Retrieval → LLM → Answer -->
+        <!-- User node (left) -->
+        <circle cx="60" cy="240" r="34" fill="#f5f2eb" stroke="#c8401a" stroke-width="1.5"/>
+        <text x="60" y="236" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#c8401a" font-weight="500">USER</text>
+        <text x="60" y="248" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#c8401a" font-weight="500">QUERY</text>
+
+        <!-- arrow 1 -->
+        <line x1="96" y1="240" x2="136" y2="240" stroke="rgba(200,64,26,0.35)" stroke-width="1.5" stroke-dasharray="5 3" class="animated-dash"/>
+        <polygon points="136,236 144,240 136,244" fill="rgba(200,64,26,0.5)"/>
+
+        <!-- Retrieval node (top centre-left) -->
+        <circle cx="220" cy="130" r="36" fill="#f5f2eb" stroke="#c8401a" stroke-width="1.5"/>
+        <text x="220" y="126" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a" font-weight="500">SEMANTIC</text>
+        <text x="220" y="137" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a" font-weight="500">RETRIEVAL</text>
+        <text x="220" y="148" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a" font-weight="500">CHUNKS</text>
+
+        <!-- line user → retrieval -->
+        <line x1="88" y1="222" x2="192" y2="152" stroke="rgba(200,64,26,0.3)" stroke-width="1.5" stroke-dasharray="5 3" class="animated-dash"/>
+
+        <!-- Docs store (top right) -->
+        <rect x="330" y="60" width="88" height="60" rx="4" fill="rgba(42,82,152,0.06)" stroke="rgba(42,82,152,0.35)" stroke-width="1"/>
+        <text x="374" y="84" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#2a5298">KNOWLEDGE</text>
+        <text x="374" y="95" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#2a5298">BASE</text>
+        <text x="374" y="106" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#2a5298">8 DOCS</text>
+        <line x1="330" y1="100" x2="258" y2="130" stroke="rgba(42,82,152,0.25)" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- LLM node (centre) -->
+        <circle cx="220" cy="255" r="42" fill="#c8401a" opacity="0.12"/>
+        <circle cx="220" cy="255" r="30" fill="#c8401a" opacity="0.22"/>
+        <circle cx="220" cy="255" r="18" fill="#c8401a" opacity="0.85"/>
+        <text x="220" y="251" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8" fill="white" letter-spacing="0.05em">CLAUDE</text>
+        <text x="220" y="262" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="rgba(255,255,255,0.7)">4.5 SONNET</text>
+
+        <!-- line retrieval → llm -->
+        <line x1="220" y1="168" x2="220" y2="224" stroke="rgba(200,64,26,0.3)" stroke-width="1.5" stroke-dasharray="5 3" class="animated-dash"/>
+
+        <!-- Answer node (right) -->
+        <circle cx="370" cy="255" r="34" fill="#f5f2eb" stroke="#c8401a" stroke-width="1.5"/>
+        <text x="370" y="251" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#c8401a" font-weight="500">CITED</text>
+        <text x="370" y="262" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7.5" fill="#c8401a" font-weight="500">ANSWER</text>
+
+        <!-- line LLM → answer -->
+        <line x1="250" y1="255" x2="334" y2="255" stroke="rgba(200,64,26,0.35)" stroke-width="1.5" stroke-dasharray="5 3" class="animated-dash"/>
+        <polygon points="334,251 342,255 334,259" fill="rgba(200,64,26,0.5)"/>
+
+        <!-- config nodes below LLM -->
+        <!-- Temp -->
+        <line x1="204" y1="286" x2="148" y2="360" stroke="rgba(200,64,26,0.2)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="134" cy="376" r="26" fill="#f5f2eb" stroke="#c8401a" stroke-width="1"/>
+        <text x="134" y="372" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a">T = 0.4</text>
+        <text x="134" y="383" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a">TEMP</text>
+
+        <!-- Memory -->
+        <line x1="220" y1="298" x2="220" y2="366" stroke="rgba(200,64,26,0.2)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="220" cy="382" r="26" fill="#f5f2eb" stroke="#c8401a" stroke-width="1"/>
+        <text x="220" y="378" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a">SLIDING</text>
+        <text x="220" y="389" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a">MEMORY</text>
+
+        <!-- Citations -->
+        <line x1="236" y1="286" x2="292" y2="360" stroke="rgba(200,64,26,0.2)" stroke-width="1" stroke-dasharray="3 3"/>
+        <circle cx="306" cy="376" r="26" fill="#f5f2eb" stroke="#c8401a" stroke-width="1"/>
+        <text x="306" y="372" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a">CITATION</text>
+        <text x="306" y="383" text-anchor="middle" font-family="'DM Mono',monospace" font-size="7" fill="#c8401a">ENABLED</text>
+
+        <!-- Decorative dots -->
+        <circle cx="60" cy="240" r="2.5" fill="rgba(200,64,26,0.4)"/>
+        <circle cx="370" cy="255" r="2.5" fill="rgba(200,64,26,0.4)"/>
+        <circle cx="220" cy="130" r="2.5" fill="rgba(200,64,26,0.4)"/>
+
+        <!-- bottom label -->
+        <text x="220" y="450" text-anchor="middle" font-family="'DM Mono',monospace" font-size="8" fill="rgba(200,64,26,0.35)" letter-spacing="0.15em">RAG · RETRIEVAL-AUGMENTED · GENERATION</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="hero-bottom">
+    <span>RAG · NLP · LLM Evaluation</span>
+    <span class="scroll-hint">↓ Scroll to explore</span>
+    <span>2025</span>
+  </div>
+</div>
+
+<hr class="divider"/>
+
+<!-- ═══ DOCUMENT SELECTION ═══ -->
+<section class="fade-in">
+  <div class="section-label">Domain</div>
+  <h2 class="section-title">Four Document Sub-topics</h2>
+  <p class="section-intro">Documents were chosen to reflect real student cooking challenges — not ideal kitchen scenarios. Each category targets a distinct pain point.</p>
+
+  <div class="doc-grid">
+    <div class="doc-card">
+      <div class="doc-num">01</div>
+      <div class="doc-title">One-Pot Meals</div>
+      <div class="doc-desc">Minimal utensils, reduced cleanup. Supports students with limited kitchen access and shared living situations.</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-num">02</div>
+      <div class="doc-title">Protein-Focused</div>
+      <div class="doc-desc">Affordable protein sources covering both vegetarian and non-vegetarian options on a tight budget.</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-num">03</div>
+      <div class="doc-title">No-Cook Meals</div>
+      <div class="doc-desc">Time and energy constraints considered. Highly realistic for busy or exhausted students.</div>
+    </div>
+    <div class="doc-card">
+      <div class="doc-num">04</div>
+      <div class="doc-title">Accessible & Safe</div>
+      <div class="doc-desc">Ingredient substitutions for affordability, plus food safety and storage guidance.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══ SYSTEM CONFIGURATION ═══ -->
+<section class="fade-in">
+  <div class="section-label">Configuration</div>
+  <h2 class="section-title">How the System Was Built</h2>
+  <p class="section-intro">Every setting was chosen deliberately to prioritise factual accuracy and scope safety over expressive freedom.</p>
+
+  <div class="config-grid">
+    <div class="config-card">
+      <div class="config-icon">◎</div>
+      <div>
+        <div class="config-label">Model</div>
+        <div class="config-title">Claude 4.5 Sonnet</div>
+        <div class="config-text">Selected for strong instruction-following, high-quality summarisation, reliable multi-document synthesis, and safe handling of out-of-scope queries.</div>
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-icon">⊙</div>
+      <div>
+        <div class="config-label">Temperature</div>
+        <div class="config-title">T = 0.4 (Low)</div>
+        <div class="config-text">Prioritises factual consistency across responses while still producing clear, readable natural language. Reduces randomness in recipe outputs.</div>
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-icon">≡</div>
+      <div>
+        <div class="config-label">Retrieval</div>
+        <div class="config-title">Semantic Chunk Search</div>
+        <div class="config-text">Chunk-based semantic retrieval identifies relevant sections across multiple recipe documents. Citations enabled for full transparency.</div>
+      </div>
+    </div>
+    <div class="config-card">
+      <div class="config-icon">↺</div>
+      <div>
+        <div class="config-label">Memory</div>
+        <div class="config-title">Sliding Window (10)</div>
+        <div class="config-text">Maintains short conversational context without long-term accumulation. Safety guardrails enforced via system prompt — not platform-level filters.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══ PIPELINE (dark) ═══ -->
+<div class="dark-section fade-in">
+  <div class="dark-inner">
+    <div class="dark-label">Architecture</div>
+    <h2 class="dark-title">The RAG Pipeline</h2>
+    <p class="dark-intro">Four steps from user question to cited answer — built on Stack AI with Anthropic's Claude at the core.</p>
+
+    <div class="pipeline-row">
+      <div class="pipeline-step">
+        <div class="pipeline-num">01</div>
+        <div class="pipeline-name">User Input</div>
+        <div class="pipeline-desc">Student types a natural-language meal query. No structured search terms required.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">02</div>
+        <div class="pipeline-name">Document Retrieval</div>
+        <div class="pipeline-desc">Semantic search identifies the most relevant chunks from the 8-document knowledge base.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">03</div>
+        <div class="pipeline-name">Grounded Generation</div>
+        <div class="pipeline-desc">Claude synthesises the retrieved context into a concise, accurate answer — no hallucination.</div>
+      </div>
+      <div class="pipeline-step">
+        <div class="pipeline-num">04</div>
+        <div class="pipeline-name">Cited Response</div>
+        <div class="pipeline-desc">Output includes source citations so students can verify and explore original documents.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ RESULTS BY QUESTION TYPE ═══ -->
+<section class="fade-in">
+  <div class="section-label">Evaluation</div>
+  <h2 class="section-title">Results by Question Type</h2>
+  <p class="section-intro">24 test questions — 8 per category — were rated on a 1–5 scale by all group members independently. Scores were then aggregated.</p>
+
+  <div class="qtype-grid">
+    <div class="qtype-card">
+      <div class="qtype-label">Factual Questions</div>
+      <div class="qtype-score">4.3<span> / 5</span></div>
+      <div class="qtype-bar-track">
+        <div class="qtype-bar-fill" style="width:86%"></div>
+      </div>
+      <div class="qtype-text">Highest performance. Clear answers were directly present in documents. The system retrieved and presented them accurately, though responses were occasionally longer than necessary.</div>
+    </div>
+    <div class="qtype-card">
+      <div class="qtype-label">Synthesis Questions</div>
+      <div class="qtype-score">3.9<span> / 5</span></div>
+      <div class="qtype-bar-track">
+        <div class="qtype-bar-fill" style="width:78%"></div>
+      </div>
+      <div class="qtype-text">Good overall but dipped when required chunks were spread across multiple documents. Missing a single chunk produced shallow or incomplete responses with fluent but weak grounding.</div>
+    </div>
+    <div class="qtype-card">
+      <div class="qtype-label">Edge-Case Questions</div>
+      <div class="qtype-score">3.9<span> / 5</span></div>
+      <div class="qtype-bar-track">
+        <div class="qtype-bar-fill" style="width:78%"></div>
+      </div>
+      <div class="qtype-text">Widest variance. High scores when the system correctly refused out-of-scope queries; low scores when it generated confident but unsupported answers instead of stating uncertainty.</div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══ RESULT EXAMPLES ═══ -->
+<section class="fade-in">
+  <div class="section-label">Examples</div>
+  <h2 class="section-title">Questions in Action</h2>
+  <p class="section-intro">One example from each question category — showing expected vs actual RAG responses.</p>
+
+  <div class="example-grid">
+    <div class="example-card">
+      <div class="example-header">
+        <span class="example-type">Factual</span>
+        <span class="example-badge">Rating 4 / 5</span>
+      </div>
+      <div class="example-body">
+        <div class="example-q">"How many calories and grams of protein does High-Protein Milk contain per cup?"</div>
+        <div class="example-cols">
+          <div>
+            <div class="example-col-label">Expected</div>
+            <div class="example-col-text">211 calories and 14g protein per cup.</div>
+          </div>
+          <div>
+            <div class="example-col-label">RAG Answer</div>
+            <div class="example-col-text">Correct — but included full recipe, uses, and source footnotes instead of a concise answer.</div>
+          </div>
+        </div>
+        <div class="example-note">Good retrieval accuracy, weak output optimisation. Factual correctness confirmed but conciseness lacking.</div>
+      </div>
+    </div>
+
+    <div class="example-card">
+      <div class="example-header">
+        <span class="example-type">Synthesis</span>
+        <span class="example-badge">Rating 3 / 5</span>
+      </div>
+      <div class="example-body">
+        <div class="example-q">"Suggest a shake/smoothie that has 30g protein and list its ingredients."</div>
+        <div class="example-cols">
+          <div>
+            <div class="example-col-label">Expected</div>
+            <div class="example-col-text">Piña Colada Power Smoothie — 30g protein with listed ingredients.</div>
+          </div>
+          <div>
+            <div class="example-col-label">RAG Answer</div>
+            <div class="example-col-text">Provided two options instead of one. Correct retrieval but ignored the strict "one answer" constraint.</div>
+          </div>
+        </div>
+        <div class="example-note">Very good retrieval; poor control over answer scope. Average synthesis score ~3.9 reflects this pattern.</div>
+      </div>
+    </div>
+
+    <div class="example-card" style="grid-column: 1 / -1;">
+      <div class="example-header">
+        <span class="example-type">Edge-Case</span>
+        <span class="example-badge">Rating 2 / 5</span>
+      </div>
+      <div class="example-body">
+        <div class="example-q">"Can you recommend a one-pot recipe for muscle gain?"</div>
+        <div class="example-cols">
+          <div>
+            <div class="example-col-label">Expected</div>
+            <div class="example-col-text">"I don't have that information. The documents don't include nutritional goals or muscle-gain recommendations."</div>
+          </div>
+          <div>
+            <div class="example-col-label">RAG Answer</div>
+            <div class="example-col-text">Provided two high-protein one-pot recipes with full ingredient lists — fluent but not grounded in the query's intent. Failed to detect the out-of-scope framing.</div>
+          </div>
+        </div>
+        <div class="example-note">The system retrieved related content confidently instead of recognising the absence of muscle-gain nutritional guidance. Fluent answers masked the missing grounding.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ═══ KEY FINDINGS ═══ -->
+<section class="fade-in">
+  <div class="section-label">Synthesis</div>
+  <h2 class="section-title">Four Key Findings</h2>
+  <p class="section-intro">What the evaluation revealed about RAG system behaviour — and where the limits lie.</p>
+
+  <div class="findings-grid">
+    <div class="finding-card">
+      <div class="finding-num">01</div>
+      <div class="finding-title">RAG Outperforms Traditional Search for Factual Queries</div>
+      <div class="finding-text">The system returned direct natural-language answers rather than links or raw text, making it faster for students to get actionable meal information. No manual reading or interpretation required.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">02</div>
+      <div class="finding-title">Synthesis Breaks When Chunks Are Missed</div>
+      <div class="finding-text">Missing even one relevant document chunk led to shallow or incomplete responses. Multi-hop retrieval and improved recall are the clearest paths to better synthesis performance.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">03</div>
+      <div class="finding-title">Fluent Answers Can Mask Poor Grounding</div>
+      <div class="finding-text">Edge-case failures were hard to detect because the model produced well-structured, confident responses even when information was absent. Explicit uncertainty signals need strengthening.</div>
+    </div>
+    <div class="finding-card">
+      <div class="finding-num">04</div>
+      <div class="finding-title">Low Temperature Aids Accuracy, Limits Reasoning</div>
+      <div class="finding-text">T = 0.4 improved consistency for factual outputs but constrained the creative reasoning needed for complex synthesis. Temperature selection should adapt to question type.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<div class="footer-strip">
+  <p><strong>Shraddha Kedar</strong> · MSc Human-Computer Interaction · University College Dublin</p>
+  <p>IS41720 · Language Methods & Models · 2025</p>
+  <p>RAG · NLP · LLM Evaluation</p>
+</div>
+
+<script>
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>

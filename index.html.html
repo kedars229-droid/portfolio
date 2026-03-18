@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shraddha Kedar — Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --ink:    #0f0e0c;
+    --cream:  #f5f2eb;
+    --warm:   #e8e2d5;
+    --accent: #c8401a;
+    --accent2:#2a5298;
+    --muted:  #6b6560;
+    --card:   #fffef9;
+    --border: #d4cfc6;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Outfit', sans-serif;
+    font-weight: 300;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* ─── NAV ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.4rem 4rem;
+    background: rgba(245,242,235,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Fraunces', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+  .nav-logo span { color: var(--accent); font-style: italic; font-weight: 300; }
+  .nav-links {
+    display: flex;
+    gap: 2.5rem;
+    list-style: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .nav-links a {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10rem 4rem 6rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    right: -4rem;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-family: 'Fraunces', serif;
+    font-size: 22rem;
+    font-weight: 900;
+    color: rgba(200,64,26,0.04);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    letter-spacing: -0.04em;
+  }
+
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.1s ease forwards;
+  }
+  .hero-eyebrow::before { content:''; width:40px; height:1px; background:var(--accent); }
+
+  .hero-name {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(4rem, 9vw, 9.5rem);
+    font-weight: 900;
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    margin-bottom: 1rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s ease forwards;
+  }
+  .hero-name em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .hero-role {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.2rem, 2.5vw, 2rem);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--muted);
+    margin-bottom: 3rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.3s ease forwards;
+  }
+
+  .hero-bio {
+    font-size: 1.05rem;
+    font-weight: 400;
+    color: var(--muted);
+    max-width: 640px;
+    line-height: 1.85;
+    margin-bottom: 3.5rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.4s ease forwards;
+  }
+
+  .hero-cta-row {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.5s ease forwards;
+  }
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--accent);
+    color: white;
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: #a03315; transform: translateY(-1px); }
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    text-decoration: none;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.9rem 2rem;
+    border-radius: 2px;
+    transition: border-color 0.2s, color 0.2s, transform 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
+  .hero-scroll {
+    position: absolute;
+    bottom: 3rem; left: 4rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    animation: nudge 2.5s ease-in-out infinite;
+  }
+  @keyframes nudge { 0%,100%{transform:translateY(0)} 50%{transform:translateY(5px)} }
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(20px); }
+    to   { opacity:1; transform:none; }
+  }
+
+  /* ─── SECTION SHARED ─── */
+  .section-wrap {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 4rem;
+  }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .section-label::before { content:''; width:30px; height:1px; background:var(--accent); }
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 3.4rem);
+    font-weight: 700;
+    line-height: 1.08;
+    margin-bottom: 1rem;
+  }
+  .section-intro {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 680px;
+    line-height: 1.85;
+    margin-bottom: 3.5rem;
+  }
+
+  .fade-in { opacity:0; transform:translateY(24px); transition: opacity 0.65s ease, transform 0.65s ease; }
+  .fade-in.visible { opacity:1; transform:none; }
+
+  hr.divider { border:none; border-top:1px solid var(--border); margin:0 4rem; }
+
+  /* ─── SKILLS STRIP ─── */
+  .skills-strip {
+    background: var(--ink);
+    padding: 4.5rem 0;
+  }
+  .skills-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4rem;
+  }
+  .skills-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #c8a090;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .skills-label::before { content:''; width:30px; height:1px; background:#c8a090; }
+  .skills-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 2.5rem;
+  }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: #2a2820;
+    border: 1px solid #2a2820;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .skill-cell {
+    background: var(--ink);
+    padding: 2rem 2.2rem;
+    transition: background 0.2s;
+  }
+  .skill-cell:hover { background: #161410; }
+  .skill-cell-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.6rem;
+  }
+  .skill-cell-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 0.5rem;
+  }
+  .skill-cell-text { font-size: 0.82rem; color: #8a8078; line-height: 1.65; }
+
+  /* ─── CASE STUDIES ─── */
+  .case-studies-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  .case-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+  .case-card:hover { transform: translateY(-5px); box-shadow: 0 16px 48px rgba(0,0,0,0.1); }
+  .case-card-header {
+    padding: 2.5rem 2.5rem 2rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--warm);
+    position: relative;
+    overflow: hidden;
+  }
+  .case-card-header::after {
+    content: attr(data-num);
+    position: absolute;
+    right: -1rem;
+    bottom: -2rem;
+    font-family: 'Fraunces', serif;
+    font-size: 9rem;
+    font-weight: 900;
+    color: rgba(200,64,26,0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .case-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.7rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+    color: var(--accent);
+    background: var(--card);
+    display: inline-block;
+    margin-bottom: 1.2rem;
+  }
+  .case-card-title {
+    font-family: 'Fraunces', serif;
+    font-size: 1.9rem;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 0.8rem;
+  }
+  .case-card-title em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+  .case-card-body { padding: 2rem 2.5rem; flex: 1; display: flex; flex-direction: column; }
+  .case-card-desc {
+    font-size: 0.95rem;
+    color: var(--muted);
+    line-height: 1.8;
+    margin-bottom: 1.8rem;
+    flex: 1;
+  }
+  .case-stats-row {
+    display: flex;
+    gap: 2rem;
+    padding: 1.2rem 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.8rem;
+  }
+  .case-stat { display: flex; flex-direction: column; gap: 0.2rem; }
+  .case-stat-num {
+    font-family: 'Fraunces', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .case-stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .case-tags-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+  }
+  .tech-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2px;
+    background: var(--warm);
+    color: var(--ink);
+    border: 1px solid var(--border);
+  }
+  .case-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    text-decoration: none;
+    border: 1px solid var(--accent);
+    padding: 0.75rem 1.5rem;
+    border-radius: 2px;
+    transition: background 0.2s, color 0.2s;
+    align-self: flex-start;
+  }
+  .case-link:hover { background: var(--accent); color: white; }
+
+  /* ─── EXPERIENCE ─── */
+  .exp-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 1px solid var(--border);
+    margin-left: 1rem;
+    padding-left: 2.5rem;
+  }
+  .exp-item {
+    position: relative;
+    padding-bottom: 3rem;
+  }
+  .exp-item:last-child { padding-bottom: 0; }
+  .exp-item::before {
+    content: '';
+    position: absolute;
+    left: -2.5rem;
+    top: 0.35rem;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateX(-4px);
+    border: 2px solid var(--cream);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .exp-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.4rem;
+  }
+  .exp-role {
+    font-family: 'Fraunces', serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+  .exp-org {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .exp-bullets { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; }
+  .exp-bullets li {
+    font-size: 0.88rem;
+    color: var(--muted);
+    line-height: 1.65;
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .exp-bullets li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 0.7rem;
+  }
+
+  /* ─── EDUCATION ─── */
+  .edu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  .edu-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2rem 2.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .edu-card::after {
+    content: attr(data-glyph);
+    position: absolute;
+    right: 1rem; bottom: -0.5rem;
+    font-family: 'Fraunces', serif;
+    font-size: 5rem;
+    font-weight: 900;
+    color: rgba(200,64,26,0.05);
+    line-height: 1;
+  }
+  .edu-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+  }
+  .edu-degree {
+    font-family: 'Fraunces', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 0.3rem;
+  }
+  .edu-school {
+    font-size: 0.88rem;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+  }
+  .edu-gpa {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    background: var(--warm);
+    display: inline-block;
+    padding: 0.2rem 0.7rem;
+    border-radius: 2px;
+    border: 1px solid var(--border);
+  }
+  .edu-modules {
+    margin-top: 0.8rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* ─── CERTIFICATIONS ─── */
+  .cert-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .cert-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.8rem 1.2rem;
+    font-size: 0.85rem;
+    font-weight: 400;
+    color: var(--ink);
+    transition: border-color 0.2s;
+  }
+  .cert-pill:hover { border-color: var(--accent); }
+  .cert-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ─── CONTACT ─── */
+  .contact-strip {
+    background: var(--ink);
+    padding: 6rem 0;
+  }
+  .contact-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+  .contact-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: #c8a090;
+    margin-bottom: 1rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .contact-label::before { content:''; width:30px; height:1px; background:#c8a090; }
+  .contact-title {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    color: var(--cream);
+    line-height: 1.08;
+    margin-bottom: 1rem;
+  }
+  .contact-title em { font-style: italic; font-weight: 300; color: var(--accent); }
+  .contact-bio { font-size: 0.95rem; color: #8a8078; line-height: 1.8; }
+  .contact-links { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    text-decoration: none;
+    padding: 1.2rem 1.5rem;
+    border: 1px solid #2a2820;
+    border-radius: 3px;
+    background: #161410;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .contact-link:hover { border-color: var(--accent); transform: translateX(4px); }
+  .contact-link-icon {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--accent);
+    width: 32px;
+    flex-shrink: 0;
+  }
+  .contact-link-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #6a6460;
+    margin-bottom: 0.2rem;
+  }
+  .contact-link-val {
+    font-size: 0.88rem;
+    color: var(--cream);
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    background: var(--ink);
+    border-top: 1px solid #1e1c18;
+    padding: 2rem 4rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #3a3830;
+  }
+  .footer strong { color: #6a6460; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 860px) {
+    nav { padding: 1.2rem 2rem; }
+    .nav-links { display: none; }
+    .hero { padding: 8rem 2rem 4rem; }
+    .hero-bg-text { font-size: 10rem; }
+    .section-wrap { padding: 3.5rem 2rem; }
+    hr.divider { margin: 0 2rem; }
+    .case-studies-grid { grid-template-columns: 1fr; }
+    .skills-grid { grid-template-columns: 1fr; }
+    .edu-grid { grid-template-columns: 1fr; }
+    .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+    .footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    .skills-inner { padding: 0 2rem; }
+    .contact-inner { padding: 0 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-logo">Shraddha <span>Kedar</span></div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#work">Case Studies</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="about">
+  <div class="hero-bg-text">SK</div>
+
+  <div class="hero-eyebrow">MSc HCI · University College Dublin</div>
+
+  <h1 class="hero-name">
+    Shraddha<br/>
+    <em>Kedar</em>
+  </h1>
+
+  <p class="hero-role">Prompt Engineer · NLP Researcher/p>
+
+  <p class="hero-bio">
+    MSc Human-Computer Interaction candidate with a Computer Engineering background — building AI systems that are accurate, grounded, and human-centred. Hands-on with prompt engineering, RAG architectures, and LLM evaluation across real research and internship contexts.
+  </p>
+
+  <div class="hero-cta-row">
+    <a href="#work" class="btn-primary">View Case Studies ↓</a>
+    <a href="#contact" class="btn-outline">Get in Touch →</a>
+  </div>
+
+  <div class="hero-scroll">↓ &nbsp; Scroll to explore</div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ─── SKILLS ─── -->
+<div class="skills-strip fade-in" id="skills">
+  <div class="skills-inner">
+    <div class="skills-label">Competencies</div>
+    <h2 class="skills-title">What I Bring</h2>
+    <div class="skills-grid">
+      <div class="skill-cell">
+        <div class="skill-cell-label">Prompt Engineering</div>
+        <div class="skill-cell-title">Structured Prompting</div>
+        <div class="skill-cell-text">Few-shot, chain-of-thought, context injection, role-setting, iterative refinement, output formatting constraints.</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cell-label">LLM Interaction</div>
+        <div class="skill-cell-title">GPT · Claude · Llama</div>
+        <div class="skill-cell-text">Prompt design, failure mode analysis, adversarial evaluation, edge-case testing, and output quality scoring.</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cell-label">NLP & AI Systems</div>
+        <div class="skill-cell-title">RAG Pipelines</div>
+        <div class="skill-cell-text">RAG architecture, vector search, conversational AI, LSTM/N-gram language modelling, NLP model evaluation.</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cell-label">AI Safety</div>
+        <div class="skill-cell-title">Red-Teaming Principles</div>
+        <div class="skill-cell-text">Adversarial prompt concepts, prompt injection awareness, scope guardrails, anomaly detection in LLM outputs.</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cell-label">Cognitive Science</div>
+        <div class="skill-cell-title">Human-AI Interaction</div>
+        <div class="skill-cell-text">Language processing theory, mental models, UX-driven system design — grounding AI output in human cognition.</div>
+      </div>
+      <div class="skill-cell">
+        <div class="skill-cell-label">Programming & Tools</div>
+        <div class="skill-cell-title">Python · REST · Git</div>
+        <div class="skill-cell-text">Python, REST APIs, LangChain (basic), MySQL, AWS basics — and technical documentation for non-technical audiences.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── CASE STUDIES ─── -->
+<section class="section-wrap fade-in" id="work">
+  <div class="section-label">Case Studies</div>
+  <h2 class="section-title">Research Projects</h2>
+  <p class="section-intro">
+    Two end-to-end LLM evaluation studies completed as part of IS41720 — Language Methods & Models at UCD. Each investigates a different axis of AI system design.
+  </p>
+
+  <div class="case-studies-grid">
+
+    <!-- Case Study 01 -->
+    <div class="case-card">
+      <div class="case-card-header" data-num="01">
+        <div class="case-tag">Case Study 01 · Prompt Engineering</div>
+        <h3 class="case-card-title">Sentiment Analysis <em>with</em> Prompting Strategies</h3>
+      </div>
+      <div class="case-card-body">
+        <p class="case-card-desc">
+          A systematic investigation into how prompting design — chain-of-thought reasoning, role-based framing, and temperature tuning — shapes LLM performance across three distinct document types: news journalism, personal blog narrative, and multi-voice café reviews.
+        </p>
+        <div class="case-stats-row">
+          <div class="case-stat">
+            <span class="case-stat-num">6</span>
+            <span class="case-stat-label">Experiments</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">3</span>
+            <span class="case-stat-label">Doc Types</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">4</span>
+            <span class="case-stat-label">Techniques</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">T=0.3</span>
+            <span class="case-stat-label">Best Temp</span>
+          </div>
+        </div>
+        <div class="case-tags-row">
+          <span class="tech-tag">Chain-of-Thought</span>
+          <span class="tech-tag">Role Assignment</span>
+          <span class="tech-tag">Temperature Tuning</span>
+          <span class="tech-tag">Claude API</span>
+          <span class="tech-tag">NLP Evaluation</span>
+        </div>
+        <a href="sentiment_portfolio.html" class="case-link">View Full Case Study →</a>
+      </div>
+    </div>
+
+    <!-- Case Study 02 -->
+    <div class="case-card">
+      <div class="case-card-header" data-num="02">
+        <div class="case-tag">Case Study 02 · RAG System</div>
+        <h3 class="case-card-title">RAG Recipe Assistant <em>for</em> Students</h3>
+      </div>
+      <div class="case-card-body">
+        <p class="case-card-desc">
+          A Retrieval-Augmented Generation system built on Stack AI to help students find budget-friendly meal ideas. Evaluated across 24 test questions — factual, synthesis, and edge-case — using a 1–5 quality rating rubric agreed by all team members.
+        </p>
+        <div class="case-stats-row">
+          <div class="case-stat">
+            <span class="case-stat-num">24</span>
+            <span class="case-stat-label">Test Questions</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">8</span>
+            <span class="case-stat-label">Documents</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">4.3</span>
+            <span class="case-stat-label">Top Score /5</span>
+          </div>
+          <div class="case-stat">
+            <span class="case-stat-num">T=0.4</span>
+            <span class="case-stat-label">Temp Used</span>
+          </div>
+        </div>
+        <div class="case-tags-row">
+          <span class="tech-tag">RAG Architecture</span>
+          <span class="tech-tag">Vector Search</span>
+          <span class="tech-tag">Claude 4.5 Sonnet</span>
+          <span class="tech-tag">Stack AI</span>
+          <span class="tech-tag">LLM Evaluation</span>
+        </div>
+        <a href="rag_portfolio.html" class="case-link">View Full Case Study →</a>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ─── EXPERIENCE ─── -->
+<section class="section-wrap fade-in" id="experience">
+  <div class="section-label">Experience</div>
+  <h2 class="section-title">Professional History</h2>
+  <p class="section-intro">Internship experience across AI knowledge systems and cybersecurity — grounded in real-world data and high-stakes environments.</p>
+
+  <div class="exp-timeline">
+
+    <div class="exp-item">
+      <div class="exp-date">2024</div>
+      <div class="exp-role">AI Prompt & Knowledge Systems Intern</div>
+      <div class="exp-org">Edunet Foundation</div>
+      <ul class="exp-bullets">
+        <li>Architected an AI-powered knowledge assistant using prompt-driven workflows to automate intelligent information retrieval from large document collections.</li>
+        <li>Engineered and iterated on prompts using structured design and context injection to improve response accuracy, relevance, and usability.</li>
+        <li>Evaluated model behaviour across edge cases and diverse input types, identifying failure modes and refining prompts for robustness.</li>
+        <li>Documented prompt strategies, experimental findings, and best practices into an internal knowledge base for team reuse.</li>
+        <li>Integrated external LLM APIs for real-time contextual response generation within automated processing workflows.</li>
+      </ul>
+    </div>
+
+    <div class="exp-item">
+      <div class="exp-date">2023</div>
+      <div class="exp-role">Security & Systems Intern</div>
+      <div class="exp-org">Bhabha Atomic Research Center (BARC)</div>
+      <ul class="exp-bullets">
+        <li>Designed an SSL VPN log analysis system to detect anomalies, unauthorised access attempts, and unusual usage patterns.</li>
+        <li>Built automated parsing modules to extract structured data from raw logs, reducing manual analysis overhead significantly.</li>
+        <li>Generated actionable security insights through automated reporting in a high-security research environment.</li>
+      </ul>
+    </div>
+
+  </div>
+</section>
+
+<hr class="divider"/>
+
+<!-- ─── EDUCATION ─── -->
+<section class="section-wrap fade-in" id="education">
+  <div class="section-label">Education</div>
+  <h2 class="section-title">Academic Background</h2>
+  <p class="section-intro">A blend of Computer Engineering foundations and Human-Computer Interaction research — bridging technical AI capability with human-centred design.</p>
+
+  <div class="edu-grid">
+    <div class="edu-card" data-glyph="M">
+      <div class="edu-year">Sept 2025 – Aug 2026</div>
+      <div class="edu-degree">MSc Human-Computer Interaction</div>
+      <div class="edu-school">University College Dublin</div>
+      <div class="edu-gpa">GPA: 3.65 / 4.0 (Semester 1)</div>
+      <div class="edu-modules">Cognitive Science · Language & Mental Models · Human-AI Interaction · UX Research · Interaction Design · Information Architecture</div>
+    </div>
+    <div class="edu-card" data-glyph="B">
+      <div class="edu-year">2021 – 2025</div>
+      <div class="edu-degree">BE Computer Engineering</div>
+      <div class="edu-school">Terna Engineering College</div>
+      <div class="edu-gpa">GPA: 8.44 / 10</div>
+      <div class="edu-modules">Data Structures · Machine Learning · Natural Language Processing · Database Systems · Computer Networks · Software Engineering</div>
+    </div>
+  </div>
+
+  <!-- Certifications -->
+  <div style="margin-top:2.5rem;">
+    <div class="section-label" style="margin-bottom:1.2rem;">Certifications & Activities</div>
+    <div class="cert-row">
+      <div class="cert-pill"><div class="cert-dot"></div>Cybersecurity Training — ICT Academy</div>
+      <div class="cert-pill"><div class="cert-dot"></div>Python Programming Certification</div>
+      <div class="cert-pill"><div class="cert-dot"></div>Treasurer, Computer Society of India</div>
+      <div class="cert-pill"><div class="cert-dot"></div>NSS Volunteer — 120+ hrs</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<div class="contact-strip fade-in" id="contact">
+  <div class="contact-inner">
+    <div>
+      <div class="contact-label">Get in Touch</div>
+      <h2 class="contact-title">Let's <em>work</em><br/>together.</h2>
+      <p class="contact-bio">
+        Open to prompt engineering roles, NLP research collaborations, and AI system design opportunities. Based in Dublin — available for remote and on-site work.
+      </p>
+    </div>
+    <div class="contact-links">
+      <a href="mailto:smkedar30@gmail.com" class="contact-link">
+        <span class="contact-link-icon">@</span>
+        <div>
+          <div class="contact-link-label">Email</div>
+          <div class="contact-link-val">smkedar30@gmail.com</div>
+        </div>
+      </a>
+      <a href="tel:+353870391108" class="contact-link">
+        <span class="contact-link-icon">☏</span>
+        <div>
+          <div class="contact-link-label">Phone</div>
+          <div class="contact-link-val">+353 870 391 108</div>
+        </div>
+      </a>
+      <a href="https://www.linkedin.com/in/shraddha-kedar-2995771a2/" target="_blank" class="contact-link">
+        <span class="contact-link-icon">in</span>
+        <div>
+          <div class="contact-link-label">LinkedIn</div>
+          <div class="contact-link-val">linkedin.com/in/shraddha-kedar</div>
+        </div>
+      </a>
+      <a href="#" class="contact-link">
+        <span class="contact-link-icon">◎</span>
+        <div>
+          <div class="contact-link-label">Location</div>
+          <div class="contact-link-val">Dublin, Ireland</div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span><strong>Shraddha Kedar</strong> · MSc HCI · UCD</span>
+  <span>IS41720 · Language Methods & Models · 2025</span>
+  <span>Prompt Engineering · NLP · LLM Evaluation</span>
+</div>
+
+<script>
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.07 });
+  document.querySelectorAll('.fade-in').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
